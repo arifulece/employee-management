@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: employee-config
+  namespace: employee-system
+
+data:
+  APP_NAME: "Employee Management System"
+  APP_ENV: "production"
+  APP_PORT: "8080"
+
+  DB_HOST: "mariadb-service"
+  DB_PORT: "3306"
+  DB_NAME: "employee_db"

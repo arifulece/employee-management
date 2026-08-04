@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mariadb
+  namespace: employee-system
+  labels:
+    app: mariadb
+    tier: database
+    environment: production
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mariadb
+
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        tier: database
+
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:11.4
+
+        ports:
+        - containerPort: 3306
+
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: employee-config
+              key: DB_NAME
+
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: employee-secret
+              key: DB_USERNAME
+
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: employee-secret
+              key: DB_PASSWORD
+
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: employee-secret
+              key: MYSQL_ROOT_PASSWORD
+
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /var/lib/mysql
+
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: employee-pvc
