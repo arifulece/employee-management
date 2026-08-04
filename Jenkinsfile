@@ -50,7 +50,7 @@ pipeline {
 
                 sh '''
 
-                kubectl apply -f employee-managment-k8s/
+                kubectl apply -f .
 
                 '''
 
